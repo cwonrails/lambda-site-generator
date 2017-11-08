@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Lambda deployment package
+*.dist-info
+jinja2/
+markdown/
+markupsafe/
+packaged-template.yaml

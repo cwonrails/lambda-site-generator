@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: A site generator that transforms Markdown into HTML
+Resources:
+  SiteGen:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main.handler
+      Runtime: python3.6
+      Timeout: 10
+      CodeUri: ./src
+      Policies: AmazonS3FullAccess
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref Bucket
+            Events: s3:ObjectCreated:*
+  Bucket:
+    Type: AWS::S3::Bucket
