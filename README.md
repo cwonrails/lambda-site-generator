@@ -30,7 +30,7 @@ For instructions on creating an S3 bucket, see [Create a Bucket](http://docs.aws
 
 ### Install dependencies ###
 
-The site generator requires several Python libraries. Install them for deployment.
+The site generator requires several Python libraries. Install them:
 
     cd src
     virtualenv venv
@@ -76,9 +76,9 @@ You can find the name of the bucket by opening the CloudFormation console, selec
 
 ### Test your application in the cloud ###
 
-Upload a Markdown file to your input bucket; the file will be transformed to HTML and moved to the output bucket.
+Upload a Markdown file to your input bucket; the file content will be transformed to HTML and written to a new .html file in the output bucket.
 
-To host static content, you'll need to do some additional configuration of your output bucket. To learn more about configuring a bucket for web hosting, see: [Hosting a Static Website on Amazon S3](http://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html).
+To host static content, you'll need to do some additional configuration of your output bucket. To learn more about configuring a bucket for web hosting, see [Hosting a Static Website on Amazon S3](http://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html).
 
 ## Build your own site ##
 
@@ -88,3 +88,6 @@ Put your own [Jinja2](jinja.pocoo.org/docs/2.10/) templates in the templates dir
 * Process multiple documents at once, as described [here](https://pythonhosted.org/Markdown/reference.html#the-details).
 * Hide Markdown processing details in a class, in case we ever need to change MD parsers.
 * Support passing in bucket and file name via command line.
+* Script the creation of the S3 buckets with a Python script.
+* Script the dependency installation.
+* Consider setting output bucket name in ENV VAR.
