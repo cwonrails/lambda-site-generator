@@ -4,7 +4,7 @@ import uuid
 import os
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-BUCKET = "MY-BUCKET"
+BUCKET = "OUTPUT-BUCKET"
 
 s3 = boto3.resource('s3')
 
