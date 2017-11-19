@@ -20,13 +20,27 @@ To create and deploy the site generator, first ensure that you've installed the 
 
 ### Create S3 buckets ###
 
-To set up the site generator and test it locally, you'll need four S3 buckets: one for your packaged SAM templates, one for HTML output, one for local testing (this one is optional but recommended), and one for Markdown input. CloudFormation will automatically create the last one for you, so you need to create the other three. For convenience, you may want to use the following naming scheme for the buckets:
+To set up the site generator and test it locally, you'll need four S3 buckets: one for your packaged SAM templates, one for HTML output, one for local testing (this one is optional but recommended), and one for Markdown input. CloudFormation will automatically create the last one for you, so you need to create the other three.
+
+#### Option 1: Create buckets in the console ####
+
+For instructions on creating an S3 bucket, see [Create a Bucket](http://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html).
+
+For convenience, you may want to use the following naming scheme for the buckets:
 
 * `<my-unique-bucket-name>-templates`
 * `<my-unique-bucket-name>-output`
 * `<my-unique-bucket-name>-test`
 
-For instructions on creating an S3 bucket, see [Create a Bucket](http://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html).
+#### Option 2: Create buckets with the AWS CLI ####
+
+Run the following command, replacing the `ParameterValue` values with globally unique bucket names:
+
+    aws cloudformation create-stack --stack-name lambda-site-generator \
+    --template-body  file://./s3-buckets.yaml \
+    --parameters     ParameterKey=TemplatesBucketName,ParameterValue=my-unique-bucket-name-templates \
+                     ParameterKey=OutputBucketName,ParameterValue=my-unique-bucket-name-output \
+                     ParameterKey=TestBucketName,ParameterValue=my-unique-bucket-name-test
 
 ### Install dependencies ###
 
