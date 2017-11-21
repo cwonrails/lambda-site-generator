@@ -36,7 +36,7 @@ For convenience, you may want to use the following naming scheme for the buckets
 
 Run the following command, replacing the `ParameterValue` values with globally unique bucket names:
 
-    aws cloudformation create-stack --stack-name lambda-site-generator \
+    aws cloudformation create-stack --stack-name LambdaSiteGenBuckets \
     --template-body  file://./s3-buckets.yaml \
     --parameters     ParameterKey=TemplatesBucketName,ParameterValue=my-unique-bucket-name-templates \
                      ParameterKey=OutputBucketName,ParameterValue=my-unique-bucket-name-output \
