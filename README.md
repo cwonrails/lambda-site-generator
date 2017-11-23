@@ -22,7 +22,7 @@ To create and deploy the site generator, first ensure that you've installed the 
 
 If you don't already have one, create an S3 bucket for your SAM templates:
 
-    aws s3 mb s3://<my-unique-template-bucket-name>
+    aws s3 mb s3://<my-template-bucket>
 
 ### Install dependencies ###
 
@@ -38,9 +38,9 @@ The libraries to be installed (Jinja2, MarkupSafe, and Markdown) are ignored in 
 
 ### Package artifacts ###
 
-When you're done coding and ready to deploy, run the following command, replacing `<TEMPLATE-BUCKET>` with the name of your templates bucket:
+When you're done coding and ready to deploy, run the following command, replacing `<my-template-bucket>` with the name of your templates bucket:
 
-    sam package --template-file template.yaml --s3-bucket <TEMPLATE-BUCKET> --output-template-file packaged-template.yaml
+    sam package --template-file template.yaml --s3-bucket <my-template-bucket> --output-template-file packaged-template.yaml
 
 This creates a new template file, packaged-template.yaml, that you will use to deploy your application.
 
@@ -60,9 +60,9 @@ Upload a Markdown file to your input bucket; the file content will be transforme
 
 First, upload a Markdown file to your test bucket. Then use [SAM Local](https://github.com/awslabs/aws-sam-local) to test your Lambda function before deploying it:
 
-    sam local generate-event s3 --bucket <TEST-BUCKET> --key <KEY> | sam local invoke "SiteGen"
+    sam local generate-event s3 --bucket <my-unique-stack-name>-input --key <KEY> | OUTPUT_BUCKET=<my-unique-stack-name>-output sam local invoke "SiteGen"
 
-`<TEST-BUCKET>` is the name of your test bucket, and `<KEY>` is the name of the Markdown file that you uploaded to the test bucket. After running the command, you should find a new `<KEY>.html` file in your output bucket. The Markdown should be transformed to HTML.
+`<KEY>` is the name of the Markdown file that you uploaded to the test bucket. `<my-unique-stack-name>-input` and `<my-unique-stack-name>-output` are your input and output buckets, respectively. After running the command, you should find a new `<KEY>.html` file in your output bucket, with Markdown transformed to HTML.
 
 ## Build your own site ##
 
