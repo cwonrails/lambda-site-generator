@@ -9,12 +9,29 @@ Resources:
       Runtime: python3.6
       Timeout: 10
       CodeUri: ./src
-      Policies: AmazonS3FullAccess
+      Policies:
+        - S3CrudPolicy:
+            BucketName:
+              Fn::Sub: "${AWS::StackName}-input"
+        - S3CrudPolicy:
+            BucketName:
+              Fn::Sub: "${AWS::StackName}-output"
       Events:
         FileUpload:
           Type: S3
           Properties:
-            Bucket: !Ref Bucket
+            Bucket: !Ref InputBucket
             Events: s3:ObjectCreated:*
-  Bucket:
+      Environment:
+        Variables:
+          OUTPUT_BUCKET: !Ref OutputBucket
+  InputBucket:
     Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: "${AWS::StackName}-input"
+  OutputBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: "${AWS::StackName}-output"

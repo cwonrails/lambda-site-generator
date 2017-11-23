@@ -18,29 +18,11 @@ To install Docker and SAM Local, follow the instructions at [Requirements for Us
 
 To create and deploy the site generator, first ensure that you've installed the requirements. Then follow the steps below.
 
-### Create S3 buckets ###
+### Create an S3 bucket ###
 
-To set up the site generator and test it locally, you'll need four S3 buckets: one for your packaged SAM templates, one for HTML output, one for local testing (this one is optional but recommended), and one for Markdown input. CloudFormation will automatically create the last one for you, so you need to create the other three.
+If you don't already have one, create an S3 bucket for your SAM templates:
 
-#### Option 1: Create buckets in the console ####
-
-For instructions on creating an S3 bucket, see [Create a Bucket](http://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html).
-
-For convenience, you may want to use the following naming scheme for the buckets:
-
-* `<my-unique-bucket-name>-templates`
-* `<my-unique-bucket-name>-output`
-* `<my-unique-bucket-name>-test`
-
-#### Option 2: Create buckets with the AWS CLI ####
-
-Run the following command, replacing the `ParameterValue` values with globally unique bucket names:
-
-    aws cloudformation create-stack --stack-name LambdaSiteGenBuckets \
-    --template-body  file://./s3-buckets.yaml \
-    --parameters     ParameterKey=TemplatesBucketName,ParameterValue=my-unique-bucket-name-templates \
-                     ParameterKey=OutputBucketName,ParameterValue=my-unique-bucket-name-output \
-                     ParameterKey=TestBucketName,ParameterValue=my-unique-bucket-name-test
+    aws s3 mb s3://<my-unique-template-bucket-name>
 
 ### Install dependencies ###
 
@@ -54,18 +36,6 @@ The site generator requires several Python libraries. Install them:
 
 The libraries to be installed (Jinja2, MarkupSafe, and Markdown) are ignored in .gitignore.
 
-### Point the code to your output bucket ###
-
-In main.py, replace `OUTPUT-BUCKET` with the name of your output bucket.
-
-### [Optional] Test your application locally ###
-
-First, upload a Markdown file to your test bucket. Then use [SAM Local](https://github.com/awslabs/aws-sam-local) to test your Lambda function before deploying it:
-
-    sam local generate-event s3 --bucket <TEST-BUCKET> --key <KEY> | sam local invoke "SiteGen"
-
-`<TEST-BUCKET>` is the name of your test bucket, and `<KEY>` is the name of the Markdown file that you uploaded to the test bucket. After running the command, you should find a new `<KEY>.html` file in your output bucket. The Markdown should be transformed to HTML.
-
 ### Package artifacts ###
 
 When you're done coding and ready to deploy, run the following command, replacing `<TEMPLATE-BUCKET>` with the name of your templates bucket:
@@ -76,27 +46,29 @@ This creates a new template file, packaged-template.yaml, that you will use to d
 
 ### Deploy to AWS CloudFormation ###
 
-Run the following command, replacing `<MY-NEW-STACK>` with a name for your CloudFormation stack.
+Run the following command, replacing `<my-unique-stack-name>` with a name for your CloudFormation stack.
 
-    sam deploy --template-file packaged-template.yaml --stack-name <MY-NEW-STACK> --capabilities CAPABILITY_IAM
+    sam deploy --template-file packaged-template.yaml --stack-name <my-unique-stack-name> --capabilities CAPABILITY_IAM
 
-This uploads your template to an S3 bucket and deploys the specified resources using AWS CloudFormation.
-
-### Get the name of your input bucket ###
-
-When you deploy the site generator, CloudFormation provisions a new bucket where Lambda will listen for new objects to be created. This is your input bucket, where you'll put Markdown files to be converted to HTML. To use the site generator, you'll upload Markdown files to this bucket.
-
-You can find the name of the bucket by opening the CloudFormation console, selecting your new stack, and locating the bucket under **Resources**.
+CloudFormation will create S3 buckets named after the stack, so use a stack name that a) is globally unique b) contains only lowercase letters, numbers, and hyphens.
 
 ### Test your application in the cloud ###
 
 Upload a Markdown file to your input bucket; the file content will be transformed to HTML and written to a new .html file in the output bucket.
 
-To host static content, you'll need to do some additional configuration of your output bucket. To learn more about configuring a bucket for web hosting, see [Hosting a Static Website on Amazon S3](http://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html).
+### [Optional] Test your application locally ###
+
+First, upload a Markdown file to your test bucket. Then use [SAM Local](https://github.com/awslabs/aws-sam-local) to test your Lambda function before deploying it:
+
+    sam local generate-event s3 --bucket <TEST-BUCKET> --key <KEY> | sam local invoke "SiteGen"
+
+`<TEST-BUCKET>` is the name of your test bucket, and `<KEY>` is the name of the Markdown file that you uploaded to the test bucket. After running the command, you should find a new `<KEY>.html` file in your output bucket. The Markdown should be transformed to HTML.
 
 ## Build your own site ##
 
 Put your own [Jinja2](jinja.pocoo.org/docs/2.10/) templates in the templates dir, add scripts and styles, and make a real site!
+
+To host static content, you'll need to do some additional configuration of your output bucket. To learn more about configuring a bucket for web hosting, see [Hosting a Static Website on Amazon S3](http://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html).
 
 ## TODO ##
 * Process multiple documents at once, as described [here](https://pythonhosted.org/Markdown/reference.html#the-details).
