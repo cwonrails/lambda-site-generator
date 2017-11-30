@@ -38,7 +38,7 @@ The libraries to be installed (Jinja2, MarkupSafe, and Markdown) are ignored in 
 
 ### Package artifacts ###
 
-When you're done coding and ready to deploy, run the following command, replacing `<my-template-bucket>` with the name of your templates bucket:
+When you're done coding and ready to deploy, run the following command, replacing `<my-template-bucket>` with the name of your existing SAM template bucket:
 
     sam package --template-file template.yaml --s3-bucket <my-template-bucket> --output-template-file packaged-template.yaml
 
@@ -46,9 +46,9 @@ This creates a new template file, packaged-template.yaml, that you will use to d
 
 ### Deploy to AWS CloudFormation ###
 
-Run the following command, replacing `<my-unique-stack-name>` with a name for your CloudFormation stack.
+Run the following command, replacing `<my-unique-stack-name>` with a name for your CloudFormation stack, and replacing `<my-input-bucket>` and `<my-output-bucket>` with the names of buckets that SAM will create for you:.
 
-    sam deploy --template-file packaged-template.yaml --stack-name <my-unique-stack-name> --capabilities CAPABILITY_IAM
+    sam deploy --template-file packaged-template.yaml --stack-name <my-unique-stack-name> --capabilities CAPABILITY_IAM --parameter-overrides InputBucketName=<my-input-bucket> OutputBucketName=<my-output-bucket>
 
 CloudFormation will create S3 buckets named after the stack, so use a stack name that a) is globally unique b) contains only lowercase letters, numbers, and hyphens.
 
@@ -60,9 +60,9 @@ Upload a Markdown file to your input bucket; the file content will be transforme
 
 First, upload a Markdown file to your test bucket. Then use [SAM Local](https://github.com/awslabs/aws-sam-local) to test your Lambda function before deploying it:
 
-    sam local generate-event s3 --bucket <my-unique-stack-name>-input --key <KEY> | OUTPUT_BUCKET=<my-unique-stack-name>-output sam local invoke "SiteGen"
+    sam local generate-event s3 --bucket <my-input-bucket> --key <KEY> | OUTPUT_BUCKET=<my-output-bucket> sam local invoke "SiteGen"
 
-`<KEY>` is the name of the Markdown file that you uploaded to the test bucket. `<my-unique-stack-name>-input` and `<my-unique-stack-name>-output` are your input and output buckets, respectively. After running the command, you should find a new `<KEY>.html` file in your output bucket, with Markdown transformed to HTML.
+`<KEY>` is the name of the Markdown file that you uploaded to the test bucket. `<my-input-bucket>` and `<my-output-bucket>` are your input and output buckets, respectively. After running the command, you should find a new `<KEY>.html` file in your output bucket, with Markdown transformed to HTML.
 
 ## Build your own site ##
 

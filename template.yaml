@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion : '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: A site generator that transforms Markdown into HTML
+Parameters:
+  InputBucketName:
+    Type: String
+  OutputBucketName:
+    Type: String
 Resources:
   SiteGen:
     Type: AWS::Serverless::Function
@@ -11,11 +16,9 @@ Resources:
       CodeUri: ./src
       Policies:
         - S3CrudPolicy:
-            BucketName:
-              Fn::Sub: "${AWS::StackName}-input"
+            BucketName: !Ref InputBucketName
         - S3CrudPolicy:
-            BucketName:
-              Fn::Sub: "${AWS::StackName}-output"
+            BucketName: !Ref OutputBucketName
       Events:
         FileUpload:
           Type: S3
@@ -28,10 +31,8 @@ Resources:
   InputBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName:
-        Fn::Sub: "${AWS::StackName}-input"
+      BucketName: !Ref InputBucketName
   OutputBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName:
-        Fn::Sub: "${AWS::StackName}-output"
+      BucketName: !Ref OutputBucketName
